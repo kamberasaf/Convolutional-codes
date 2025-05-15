@@ -1,20 +1,26 @@
 # Convolutional Codes (Encoder + Viterbi Decoder)
 
-This project implements a basic convolutional encoder and its corresponding Viterbi decoder in Python. It's ideal for understanding the core principles of error-correcting codes used in communication systems.
+This project implements a basic convolutional encoder and its corresponding Viterbi decoder in Python. It's intended for educational purposes and demonstrates the core principles of error-correcting codes used in digital communication systems.
 
 ## Features
 
-- Rate 1/2 convolutional encoder
-- Viterbi decoder using Hamming distance
-- Support for trellis visualization
-- Bit-level simulation
+- 📡 Rate 1/2 convolutional encoder
+- 🧠 Viterbi decoder using Hamming distance
+- 🌐 Trellis visualization support
+- 🔍 Bit-level simulation and easy-to-read outputs
+- 🧪 Includes test cases
 
-## Usage
+Getting Started
+1. Clone the repository
 
-### Encoding and Decoding Example
-```bash
+git clone https://github.com/<your-username>/Convolutional-codes.git
+cd Convolutional-codes
+
+2. Run an example
+
 python main.py --input 1011001
 
-Output:
+Sample Output:
+
 Encoded: [1, 1, 1, 0, 0, 0, 1, 1, ...]
 Decoded: [1, 0, 1, 1, 0, 0, 1]
