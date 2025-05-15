@@ -1,7 +1,7 @@
 from typing import List
 import itertools
 import copy
-
+from encoder import encode
 
 class ConvolutionalCode:
     """The code assumes zero state termination, and k=1"""
@@ -26,21 +26,6 @@ class ConvolutionalCode:
                 end.append(xor(*xor_bits))
             shift.pop()
         return end
-
-    def encode(self, data: bytes) -> List[int]:
-        """
-        encode input data bytes. Uses zero tail termination
-
-        :param data: data to be encoded
-        :return: encoded data
-        :rtype: list[int]
-        """
-        enc = [f'{data[i]:0>8b}' for i in range(len(data))]
-        input_enc = []
-        for s in enc:
-            input_enc += [int(k) for k in s]
-        ipt = self.gen_op(input_enc + [0] * self.K)
-        return ipt
 
     def decode(self, data: List[int]) -> (bytes, int):
         """
