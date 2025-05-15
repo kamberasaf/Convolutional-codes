@@ -1,24 +1,22 @@
-# main.py
-
+from convolutional_code import ConvolutionalCode
 from encoder import encode
 from decoder import viterbi_decode
+import random
 
-def main():
-    # Example input bitstream
-    input_bits = [1, 0, 1, 1, 0, 0, 1]
+def run_demo():
+    conv = ConvolutionalCode((5, 7))
+    input_bytes = b"\xFE\xF0\x0A\x01"
+    encoded = encode(input_bytes, conv)
+    decoded, corrected = viterbi_decode(encoded, conv)
+    print(f"Decoded correctly: {decoded == input_bytes}, Errors corrected: {corrected}")
 
-    print("Input bits:         ", input_bits)
-
-    # Encode
-    encoded_bits = encode(input_bits)
-    print("Encoded bits:       ", encoded_bits)
-
-    # Decode
-    decoded_bits = viterbi_decode(encoded_bits)
-    print("Decoded bits:       ", decoded_bits)
-
-    # Check correctness
-    print("Decoding successful:", decoded_bits == input_bits)
+    # Introduce noise
+    corrupted = encoded.copy()
+    for _ in range(5):
+        idx = random.randint(0, len(corrupted) - 1)
+        corrupted[idx] ^= 1
+    decoded, corrected = viterbi_decode(corrupted, conv)
+    print(f"Decoded after corruption: {decoded == input_bytes}, Errors corrected: {corrected}")
 
 if __name__ == "__main__":
-    main()
+    run_demo()
