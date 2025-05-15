@@ -15,7 +15,7 @@ This project implements a basic convolutional encoder and its corresponding Vite
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/<your-username>/Convolutional-codes.git
+git clone https://github.com/kamberasaf/Convolutional-codes.git
 cd Convolutional-codes
 ```
 
