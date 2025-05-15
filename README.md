@@ -20,7 +20,7 @@ cd Convolutional-codes
 ```
 
 ### 2. Run an example
-```plaintext
+```bash
 python main.py --input 1011001
 ```
 
