@@ -17,3 +17,15 @@ This project implements a basic convolutional encoder and its corresponding Vite
 ```bash
 git clone https://github.com/<your-username>/Convolutional-codes.git
 cd Convolutional-codes
+```
+
+### 2. Run an example
+```plaintext
+python main.py --input 1011001
+```
+
+### Sample Output:
+```plaintext
+Encoded: [1, 1, 1, 0, 0, 0, 1, 1, ...]
+Decoded: [1, 0, 1, 1, 0, 0, 1]
+```
