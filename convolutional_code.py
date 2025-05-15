@@ -2,6 +2,7 @@ from typing import List
 import itertools
 import copy
 from encoder import encode
+from decoder import viterbi_decode
 
 class ConvolutionalCode:
     """The code assumes zero state termination, and k=1"""
@@ -26,88 +27,6 @@ class ConvolutionalCode:
                 end.append(xor(*xor_bits))
             shift.pop()
         return end
-
-    def decode(self, data: List[int]) -> (bytes, int):
-        """
-        decode data bytes. The function assumes initial and final state of encoder was at the zero state.
-
-        :param data: coded data to be decoded, list of ints representing each received bit.
-        :return: return a tuple of decoded data, and the amount of corrected errors.
-        :rtype: (bytes, int)
-        """
-        register = self.regi.copy()
-        f_bits = ''.join(str(e) for e in data)
-        F_bits = [f_bits[i:i + len(self.gen)] for i in range(0, len(f_bits), len(self.gen))]
-        Vit_dict_keys = [''.join(map(str, i)) for i in itertools.product([0, 1], repeat=self.K)]
-        Vit_dict = {i: [] for i in Vit_dict_keys}  # counter for the The Viterbi Decoder.
-        turn = 0
-        while turn < len(F_bits):
-            if turn == 0:
-                prev = "".join(str(i) for i in register)
-                op_1 = self.one_bit_change(register, 0)
-                op_1_d = hamming_distance(F_bits[turn], op_1)
-                Vit_dict[f'0{prev[1:]}'] = [f"{prev} -> 0{prev[:self.K - 1]}"] + [op_1_d]
-                op_2 = self.one_bit_change(register, 1)
-                op_2_d = hamming_distance(F_bits[turn], op_2)
-                Vit_dict[f'1{prev[1:]}'] = [f"{prev} -> 1{prev[:self.K - 1]}"] + [op_2_d]
-            else:
-                temp_trails = []
-                for path in Vit_dict.values():
-                    if path:
-                        register = [int(i) for i in path[-2][-self.K:]]
-                        prev = "".join(str(i) for i in register)
-                        op_1 = self.one_bit_change(register, 0)
-                        op_1_d = hamming_distance(F_bits[turn], op_1)
-                        new_path1 = path + [f"{prev} -> 0{prev[:self.K - 1]}", path[-1] + op_1_d]
-                        temp_trails.append(new_path1)
-                        op_2 = self.one_bit_change(register, 1)
-                        op_2_d = hamming_distance(F_bits[turn], op_2)
-                        new_path2 = path + [f"{prev} -> 1{prev[:self.K - 1]}", path[-1] + op_2_d]
-                        temp_trails.append(new_path2)
-                find_path = sorted(temp_trails, key=lambda x: x[-2][-self.K:])
-                for i, best_path in enumerate(find_path):
-                    try:
-                        if best_path[-2][-self.K:] == find_path[i + 1][-2][-self.K:]:
-                            want = min(best_path[-1], find_path[i + 1][-1])
-                            if want == best_path[-1]:
-                                find_path.remove(find_path[i + 1])
-                                pass
-                            else:
-                                best_path = find_path[i + 1]
-                                find_path.remove(best_path)
-                                Vit_dict[best_path[-2][-self.K:]] = best_path
-                                continue
-                    except IndexError:
-                        pass
-                    Vit_dict[best_path[-2][-self.K:]] = best_path
-            turn += 1
-        win_order = []
-        try:
-            win_order = sorted(Vit_dict.items(), key=lambda x: x[-1][-1])
-        except IndexError:
-            for i in Vit_dict.items():
-                if i:
-                    win_order.append(i)
-            win_order = sorted(win_order, key=lambda x: x[-1][-1])
-        winner = next(iter(win_order))
-        trans = [i[:self.K] for i in winner[1] if type(i) == str]
-        final = []
-        for index, item in enumerate(trans):
-            try:
-                a = f'1{item[:-1]}'
-                if f'1{item[:-1]}' == trans[index + 1]:
-                    final.append(1)
-                else:
-                    final.append(0)
-            except IndexError:
-                pass
-        del final[-self.K + 1:]
-        full = ''.join(str(e) for e in final)
-        bits_8 = []
-        for index in range(0, len(full), 8):
-            bits_8.append(full[index: index + 8])
-        decoded_bytes = bytes([int(chunk, 2) for chunk in bits_8])
-        return decoded_bytes, winner[1][-1]
 
     def one_bit_change(self, shift_list, num_in):
         shift = shift_list.copy()
